@@ -37,8 +37,8 @@ async def problem(ctx, number: int):
     await ctx.send(embed=embedVar)
 
 @bot.command(name='check', help='Checks your code for a given solution, your solution should look like problem_number|code\n e.g. |check 1|5+5')
+@in_channel('CHANNEL_ID')
 async def eval(ctx, *, user_input):
-    if message.channel.name == 'submissions':
         number, code = user_input.split('|')
         
         problem = df.get_problem_list()['problems'][int(number)-1]
