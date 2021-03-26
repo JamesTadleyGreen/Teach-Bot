@@ -6,6 +6,7 @@ import discord
 import contextlib
 import io
 import ast
+import re
 
 import database_functions as df
 
@@ -61,6 +62,12 @@ async def eval(ctx, *, user_input):
         
         await ctx.send(embed=embedVar)
 
+
+@bot.event 
+async def on_message(message):
+    if re.match("\|check \d\|", message.content):
+        await message.delete()
+    await bot.process_commands(message)
 
 
 @bot.event
