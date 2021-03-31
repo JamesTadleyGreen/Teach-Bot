@@ -7,6 +7,7 @@ import contextlib
 import io
 import ast
 import re
+import json
 
 import database_functions as df
 
@@ -43,25 +44,25 @@ async def eval(ctx, *, user_input):
         number, code = user_input.split('|')
 
         problem = df.get_problem_list()['problems'][int(number)-1]
-        sample_value_list = [f'solution({i["input"]})' for i in problem['data']['visible']] + [f'solution({i["input"]})' for i in problem['data']['hidden']]
+        sample_value_list = [f"solution({i['input']})" for i in problem['data']['visible']] + [f"solution({i['input']})" for i in problem['data']['hidden']]
         
         print('input', sample_value_list)
-        vis_list = str(sample_value_list).replace('"', '')
-        
+        vis_list = str(json.dumps(sample_value_list)).replace('"', '')
+        print('vis', vis_list)
+        print(code + f"\nprint({vis_list})")
         # Run code
         str_obj = io.StringIO() #Retrieves a stream of data
         try:
             with contextlib.redirect_stdout(str_obj):
                 exec(code + f"\nprint({vis_list})") #! Hacky solution might be a better way
         except Exception as e:
-            print(code + f"\nprint({vis_list})")
             return await ctx.send(f"```{e.__class__.__name__}: {e}```")
         
         # Extract solutions and compare
+        print(str_obj.getvalue())
         user_solutions = ast.literal_eval(str_obj.getvalue())
         string_user_solutions = list(map(str, user_solutions))
         string_solutions = [i["output"] for i in problem['data']['visible']] + [i["output"] for i in problem['data']['hidden']]
-        print('s', string_solutions)
         string_solutions = [i.replace("'", '') for i in string_solutions]
 
         # Create embed object

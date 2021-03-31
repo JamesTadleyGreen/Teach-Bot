@@ -1,7 +1,3 @@
 # Secret Tokens #
 ###################
 *.env
-
-# Database #
-###################
-requirements.txt
